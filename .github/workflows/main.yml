@@ -25,6 +25,18 @@ jobs:
         pip install --upgrade pip setuptools
         pip install "cython<3.0.0" "buildozer==1.5.0"
 
+    - name: Generate buildozer.spec if missing
+      run: |
+        if [ ! -f buildozer.spec ]; then
+          buildozer init
+          sed -i 's/^title =.*/title = Yemek Menusu/' buildozer.spec
+          sed -i 's/^package.name =.*/package.name = yemekmenusu/' buildozer.spec
+          sed -i 's/^requirements =.*/requirements = python3,kivy/' buildozer.spec
+          sed -i 's/^#\? \?android.api =.*/android.api = 33/' buildozer.spec
+          sed -i 's/^#\? \?android.minapi =.*/android.minapi = 21/' buildozer.spec
+          sed -i 's/^#\? \?android.ndk =.*/android.ndk = 25b/' buildozer.spec
+        fi
+
     - name: Build APK with Buildozer
       run: |
         buildozer -v android debug
