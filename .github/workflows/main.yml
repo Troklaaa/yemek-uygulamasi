@@ -54,11 +54,11 @@ jobs:
             unzip \
             zip
 
-      - name: Install Buildozer & Cython
+      - name: Install Buildozer & Dependencies
         run: |
           pip install --upgrade pip
-          pip install --upgrade cython setuptools
-          pip install git+https://github.com/kivy/buildozer.git
+          pip install "cython<3.0.0" setuptools
+          pip install buildozer
 
       - name: Configure buildozer.spec and Build APK
         run: |
@@ -66,15 +66,24 @@ jobs:
             buildozer init
           fi
 
+          # Proje Ayarları
           sed -i 's/^title =.*/title = Yemek Menusu/' buildozer.spec
           sed -i 's/^package.name =.*/package.name = yemekmenusu/' buildozer.spec
-          sed -i 's/^requirements =.*/requirements = python3==3.10.12,kivy/' buildozer.spec
+          
+          # Bağımlılıklar
+          sed -i 's/^requirements =.*/requirements = python3,kivy/' buildozer.spec
+          
+          # Android SDK / NDK Ayarları
           sed -i 's/^#\? \?android.api =.*/android.api = 33/' buildozer.spec
           sed -i 's/^#\? \?android.minapi =.*/android.minapi = 21/' buildozer.spec
           sed -i 's/^#\? \?android.ndk =.*/android.ndk = 25b/' buildozer.spec
-          sed -i 's/^#\? \?android.archs =.*/android.archs = arm64-v8a, armeabi-v7a/' buildozer.spec
+          sed -i 's/^#\? \?android.archs =.*/android.archs = arm64-v8a/' buildozer.spec
           sed -i 's/^#\? \?android.accept_sdk_license =.*/android.accept_sdk_license = True/' buildozer.spec
 
+          # Python 3.14 Hatasını Engelleyen Kararlı P4A Dalı
+          sed -i 's/^#\? \?p4a.branch =.*/p4a.branch = v2024.01.21/' buildozer.spec
+
+          # Derleme
           buildozer -v android debug
 
       - name: Upload APK Artifact
