@@ -37,12 +37,6 @@ jobs:
           sed -i 's/^#\? \?android.ndk =.*/android.ndk = 25b/' buildozer.spec
         fi
 
-    - name: Build APK with Buildozer
+    - name: Accept Android SDK Licenses & Build APK
       run: |
-        buildozer -v android debug
-
-    - name: Upload APK Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: YemekMenusu-APK
-        path: bin/*.apk
+        yes | buildozer android deploy run --accept-licenses || buildozer -v android debug --accept-licenses
