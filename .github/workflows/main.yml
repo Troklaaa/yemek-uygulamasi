@@ -35,8 +35,16 @@ jobs:
           sed -i 's/^#\? \?android.api =.*/android.api = 33/' buildozer.spec
           sed -i 's/^#\? \?android.minapi =.*/android.minapi = 21/' buildozer.spec
           sed -i 's/^#\? \?android.ndk =.*/android.ndk = 25b/' buildozer.spec
+          sed -i 's/^#\? \?android.archs =.*/android.archs = arm64-v8a/' buildozer.spec
         fi
 
     - name: Accept Android SDK Licenses & Build APK
       run: |
-        yes | buildozer android deploy run --accept-licenses || buildozer -v android debug --accept-licenses
+        export CFLAGS="-Wno-error=incompatible-pointer-types -Wno-implicit-function-declaration"
+        yes | buildozer -v android debug --accept-licenses
+        
+    - name: Upload APK Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: YemekMenusu-APK
+        path: bin/*.apk
